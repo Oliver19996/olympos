@@ -31,7 +31,7 @@ GitHub の https://github.com/Oliver19996/olympos を Render に繋ぐだけで�
 
 1. **New** → **Web Service**
 2. リポジトリ `olympos`、ランタイム **Docker**
-3. 下記の環境変数とディスクを設定する
+3. 下記の環境変数を設定する。ディスクは付けない（無料枠では不可）
 
 ### 3. 環境変数
 
@@ -41,22 +41,22 @@ GitHub の https://github.com/Oliver19996/olympos を Render に繋ぐだけで�
 | --- | --- | --- |
 | `OLYMPOS_ENV` | `production` | 本番扱い |
 | `OLYMPOS_CORS_ORIGINS` | `*` | 同一オリジン配信ならこれで足りる |
-| `OLYMPOS_DB_PATH` | `/data/olympos_phase0.db` | SQLite の保存先 |
+| `OLYMPOS_DB_PATH` | `./data/olympos_phase0.db` | SQLite の保存先（コンテナ内） |
 | `PORTRAIT_PROVIDER` | `mock` | 外部似顔絵APIなし |
 
 似顔絵を実接続する場合だけ `PORTRAIT_PROVIDER=http` と URL／キーを追加します。Phase 0 では不要です。
 
-### 4. ディスク（回答を残す場合）
+### 4. ディスクは無料では付けない
 
-SQLite はファイルです。**無料Webはディスクを付けられず**、再起動・スリープ・再デプロイで回答が消えます。
+`render.yaml` は無料枠向けで、Persistent Disk は入れていません。無料で Blueprint を再実行してください。
 
-回答を残すなら：
+SQLite はコンテナ内の `./data/olympos_phase0.db` に保存されます。無料Webは再起動・スリープ・再デプロイでファイルが消えます。
 
-1. プランを **Starter**（有料）にする
-2. Persistent Disk を付ける（mount `/data`、1GB で足りる）
-3. `OLYMPOS_DB_PATH=/data/olympos_phase0.db` のままにする
+回答を残したいときだけ、デプロイ成功後に：
 
-無料で公開確認だけするならディスクなしで構いません。その場合もアプリは動きます。
+1. プランを **Starter**（有料）へ上げる
+2. Persistent Disk を付ける（mount `/data`、1GB）
+3. 環境変数 `OLYMPOS_DB_PATH` を `/data/olympos_phase0.db` に変える
 
 ### 5. 公開後
 
