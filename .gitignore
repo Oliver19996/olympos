@@ -1,0 +1,34 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+backend/data/
+*.db
+
+# Flutter / Dart
+flutter/.dart_tool/
+flutter/.flutter-plugins*
+flutter/.packages
+flutter/build/
+flutter/ios/Pods/
+flutter/ios/.symlinks/
+flutter/ios/Flutter/ephemeral/
+
+# Editors / OS
+.DS_Store
+.idea/
+*.iml
+.vscode/*.local.json
+
+# Generated / logs
+coverage/
+htmlcov/
+*.log
+.tmp/

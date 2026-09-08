@@ -1,0 +1,18 @@
+---
+description: OLYMPOS Phase 0 の構成と作業方針
+alwaysApply: true
+---
+
+# OLYMPOS Phase 0
+
+検証用プロトタイプ。実課金・本番eKYC・実デート・App Store公開は対象外。
+
+## 構成
+
+- `backend/` FastAPI + SQLite。エントリは `backend/app/main.py`
+- `web/` 検証用静的サイト（`index.html` / `app.js` / `styles.css`）
+- `flutter/` iPhone向け検証アプリ
+- `scripts/` デモデータ投入
+- `docs/` API操作メモとGitHub手順
+
+秘密情報は `backend/.env` のみ。テンプレートは `backend/.env.example`。`.env` をコミットしない。

@@ -1,0 +1,43 @@
+### OLYMPOS Phase 0 — REST Client
+### Cursor / VS Code: REST Client 拡張で各ブロックを実行
+
+@base = http://localhost:8000
+
+### Health
+GET {{base}}/health
+
+### 匿名登録
+# @name register
+POST {{base}}/v1/participants
+Content-Type: application/json
+
+{
+  "gender_identity": "male",
+  "target_gender": "female",
+  "age_band": "25-29",
+  "area": "東京23区",
+  "role": "host",
+  "required_age_bands": ["25-29"],
+  "preferred_age_bands": ["25-29"],
+  "availability": ["2026-10-03T10", "2026-10-04T13", "2026-10-10T10"],
+  "portrait_opt_in": false
+}
+
+### アンケート
+POST {{base}}/v1/surveys
+Content-Type: application/json
+
+{
+  "participant_id": "{{register.response.body.id}}",
+  "participation_intent": 4,
+  "payment_intent": 4,
+  "price_plan": "iap-baseline",
+  "usability_score": 4,
+  "comment": "API確認"
+}
+
+### 匿名編成
+POST {{base}}/v1/simulations
+
+### KPI
+GET {{base}}/v1/kpis

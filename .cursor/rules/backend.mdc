@@ -1,0 +1,12 @@
+---
+description: FastAPI バックエンドの編集規則
+globs: backend/**/*.py
+alwaysApply: false
+---
+
+# Backend
+
+- 環境変数は `backend/app/config.py` 経由で読む。`os.getenv` を散らさない。
+- 氏名・住所・電話番号は収集しない。顔写真本体は SQLite に保存しない。
+- AI似顔絵の既定は `PORTRAIT_PROVIDER=mock`。`http` にするのは契約確認後のみ。
+- APIキーは `backend/.env`。コードやコミットに埋め込まない。

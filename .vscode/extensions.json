@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "dart-code.flutter",
+    "dart-code.dart-code",
+    "humao.rest-client",
+    "redhat.vscode-yaml"
+  ]
+}

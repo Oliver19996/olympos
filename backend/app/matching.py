@@ -1,0 +1,42 @@
+from collections import defaultdict
+from .models import MatchGroup
+
+AGE_ORDER = {'20-24':0,'25-29':1,'30-34':2,'35-39':3}
+
+def _hard_match(host, candidate):
+    return (
+        host['role'] == 'host' and candidate['role'] == 'candidate'
+        and host['gender_identity'] == candidate['target_gender']
+        and candidate['gender_identity'] == host['target_gender']
+        and candidate['age_band'] in host['required_age_bands']
+        and host['age_band'] in candidate['required_age_bands']
+        and host['area'] == candidate['area']
+        and len(set(host['availability']) & set(candidate['availability'])) >= 1
+    )
+
+def _score(host, candidate):
+    shared = len(set(host['availability']) & set(candidate['availability']))
+    preference = int(candidate['age_band'] in host['preferred_age_bands']) + int(host['age_band'] in candidate['preferred_age_bands'])
+    age_distance = abs(AGE_ORDER[host['age_band']] - AGE_ORDER[candidate['age_band']])
+    return (shared * 10) + (preference * 5) - age_distance
+
+def simulate(participants):
+    """申込順を基本に、必須条件を満たす6〜7名を編成する。入力順=申込順。"""
+    hosts = [p for p in participants if p['role'] == 'host']
+    candidates = [p for p in participants if p['role'] == 'candidate']
+    used = set(); groups=[]
+    for host in hosts:
+        pool = [c for c in candidates if c['id'] not in used and _hard_match(host,c)]
+        pool.sort(key=lambda c: _score(host,c), reverse=True)
+        selected = pool[:7]
+        if len(selected) < 6:
+            continue
+        shared_count = defaultdict(int)
+        for c in selected:
+            for slot in set(host['availability']) & set(c['availability']): shared_count[slot] += 1
+        viable = sorted([s for s,n in shared_count.items() if n >= 1])
+        ctype = 'MALE_HOST' if host['gender_identity']=='male' else 'FEMALE_HOST'
+        groups.append(MatchGroup(course_type=ctype, display_name='ZEUS' if ctype=='MALE_HOST' else 'APHRODITE', host_id=host['id'], candidate_ids=[c['id'] for c in selected], shared_slots=viable[:5]))
+        used.update(c['id'] for c in selected); used.add(host['id'])
+    assigned = sum(1+len(g.candidate_ids) for g in groups)
+    return groups, assigned

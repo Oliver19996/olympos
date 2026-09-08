@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "OLYMPOS: Setup backend",
+      "type": "shell",
+      "command": "python3 -m venv backend/.venv && backend/.venv/bin/pip install -r backend/requirements.txt",
+      "problemMatcher": []
+    },
+    {
+      "label": "OLYMPOS: Start API",
+      "type": "shell",
+      "command": "backend/.venv/bin/python -m uvicorn app.main:app --reload --port 8000",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "uvicorn",
+        "pattern": [{ "regexp": ".*" }],
+        "background": { "activeOnStart": true, "beginsPattern": "Uvicorn running", "endsPattern": "Application startup complete" }
+      }
+    },
+    {
+      "label": "OLYMPOS: Start Web",
+      "type": "shell",
+      "command": "python3 -m http.server 8080",
+      "options": { "cwd": "${workspaceFolder}/web" },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "OLYMPOS: Run tests",
+      "type": "shell",
+      "command": "backend/.venv/bin/python -m pytest -q",
+      "options": { "cwd": "${workspaceFolder}/backend", "env": { "PYTHONPATH": "." } },
+      "problemMatcher": []
+    },
+    {
+      "label": "OLYMPOS: Seed demo",
+      "type": "shell",
+      "command": "backend/.venv/bin/python scripts/seed_demo.py",
+      "problemMatcher": []
+    }
+  ]
+}

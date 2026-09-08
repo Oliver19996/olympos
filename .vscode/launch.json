@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug OLYMPOS API",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--reload", "--port", "8000"],
+      "cwd": "${workspaceFolder}/backend",
+      "envFile": "${workspaceFolder}/backend/.env",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend",
+        "OLYMPOS_DB_PATH": "./data/olympos_phase0.db"
+      }
+    },
+    {
+      "name": "Flutter: OLYMPOS Phase 0",
+      "type": "dart",
+      "request": "launch",
+      "program": "${workspaceFolder}/flutter/lib/main.dart"
+    }
+  ]
+}

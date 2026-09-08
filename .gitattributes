@@ -1,0 +1,12 @@
+* text=auto eol=lf
+*.py text
+*.js text
+*.css text
+*.html text
+*.dart text
+*.yaml text
+*.yml text
+*.md text
+*.env.example text
+*.png binary
+*.jpg binary
