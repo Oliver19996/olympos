@@ -17,7 +17,7 @@ scripts/     デモデータ投入
 
 - 同意済み匿名プロフィール登録
 - 性自認・希望対象、5歳帯、東京23区、必須／希望条件、日程枠
-- 申込順を基本とする、ホスト1名＋候補者6〜7名の匿名編成
+- 申込順を基本とする、主役1名＋共演者6〜7名の匿名編成
 - ZEUS／APHRODITEのクール種別表示
 - 参加意向、支払意思、操作性アンケート
 - 4つの継続KPI（60%／40%／80%／70%）
@@ -160,4 +160,4 @@ cp backend/.env.example backend/.env
 
 ## GitHub
 
-初回のリポジトリ作成・push 手順は [docs/github.md](docs/github.md) を参照してください。
+初回のリポジトリ作成・push 手順は [docs/github.md](docs/github.md) を参照してください。外部公開は [docs/hosting.md](docs/hosting.md)（Render 推奨）。

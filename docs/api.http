@@ -13,10 +13,11 @@ Content-Type: application/json
 
 {
   "gender_identity": "male",
-  "target_gender": "female",
+  "target_genders": ["female"],
   "age_band": "25-29",
-  "area": "東京23区",
+  "area": "東京都",
   "role": "host",
+  "interested_modes": ["ZEUS"],
   "required_age_bands": ["25-29"],
   "preferred_age_bands": ["25-29"],
   "availability": ["2026-10-03T10", "2026-10-04T13", "2026-10-10T10"],
@@ -28,11 +29,9 @@ POST {{base}}/v1/surveys
 Content-Type: application/json
 
 {
-  "participant_id": "{{register.response.body.id}}",
   "participation_intent": 4,
   "payment_intent": 4,
-  "price_plan": "iap-baseline",
-  "usability_score": 4,
+  "price_plan": "external-current",
   "comment": "API確認"
 }
 

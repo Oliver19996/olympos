@@ -1,9 +1,72 @@
-const API=new URLSearchParams(location.search).get('api')||'http://localhost:8000';
+const params=new URLSearchParams(location.search);
+const local=['localhost','127.0.0.1'].includes(location.hostname);
+const API=params.get('api')||(local?'http://localhost:8000':'');
+const OPS=params.has('ops');
 const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
-function tab(id){$$('.panel').forEach(x=>x.classList.toggle('active',x.id===id));scrollTo({top:$('.steps').offsetTop-70,behavior:'smooth'})}
-$$('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));$$('[data-go]').forEach(b=>b.onclick=()=>tab(b.dataset.go));
-async function request(path,options={}){const r=await fetch(API+path,{headers:{'Content-Type':'application/json'},...options});const data=await r.json();if(!r.ok)throw new Error(data.detail||'API error');return data}
-$('#joinForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target), gender=f.get('gender_identity');try{const data=await request('/v1/participants',{method:'POST',body:JSON.stringify({gender_identity:gender,target_gender:f.get('target_gender'),role:f.get('role'),age_band:f.get('age_band'),area:f.get('area'),required_age_bands:f.getAll('required'),preferred_age_bands:f.getAll('required'),availability:['2026-10-03T10','2026-10-04T13','2026-10-10T10'],portrait_opt_in:f.has('portrait_opt_in')})});$('#joinResult').textContent=`匿名ID: ${data.id}\nこのIDをアンケートに使用してください。`;$('#surveyForm [name=participant_id]').value=data.id}catch(err){$('#joinResult').textContent=err.message}};
-$('#surveyForm').onsubmit=async e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));['participation_intent','payment_intent','usability_score'].forEach(k=>f[k]=+f[k]);try{await request('/v1/surveys',{method:'POST',body:JSON.stringify(f)});$('#surveyResult').textContent='回答を記録しました。';loadKpi()}catch(err){$('#surveyResult').textContent=err.message}};
-async function loadKpi(){try{const d=await request('/v1/kpis');const labels={participation_intent_rate:'参加意向',payment_intent_rate:'支払意思',portrait_approval_rate:'似顔絵承認',formation_rate:'編成成立'};$('#kpis').innerHTML=Object.entries(labels).map(([k,v])=>`<div><b>${v}</b><h3>${Math.round(d[k]*100)}%</h3><small>基準 ${Math.round(d.thresholds[k]*100)}%</small></div>`).join('')}catch{$('#kpis').innerHTML='<div>API起動後に表示します</div>'}}
-$('#simulate').onclick=async()=>{try{$('#simulation').textContent=JSON.stringify(await request('/v1/simulations',{method:'POST'}),null,2);loadKpi()}catch(e){$('#simulation').textContent=e.message}};$('#kpis').innerHTML='<div>API起動後に「匿名編成を実行」を押してください</div>';
+if(OPS) $$('[data-ops-only]').forEach(el=>el.hidden=false);
+function tab(id){
+  if(id==='dashboard'&&!OPS) id='join';
+  if(id==='survey') id='join';
+  $$('.panel').forEach(x=>x.classList.toggle('active',x.id===id));
+  scrollTo({top:$('.steps').offsetTop-70,behavior:'smooth'});
+}
+$$('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+$$('[data-go]').forEach(b=>b.onclick=()=>tab(b.dataset.go));
+async function request(path,options={}){
+  const r=await fetch(API+path,{headers:{'Content-Type':'application/json'},...options});
+  const data=await r.json();
+  if(!r.ok) throw new Error(typeof data.detail==='string'?data.detail:JSON.stringify(data.detail)||'API error');
+  return data;
+}
+$('#joinForm').onsubmit=async e=>{
+  e.preventDefault();
+  const f=new FormData(e.target);
+  const modes=f.getAll('mode');
+  const ages=f.getAll('required');
+  const target=f.get('target');
+  if(!target){ $('#joinResult').textContent='希望する相手を選んでください。'; return; }
+  if(!modes.length){ $('#joinResult').textContent='興味のあるモードを1つ以上選んでください。'; return; }
+  if(!ages.length){ $('#joinResult').textContent='希望年齢帯を1つ以上選んでください。'; return; }
+  try{
+    const created=await request('/v1/participants',{method:'POST',body:JSON.stringify({
+      gender_identity:f.get('gender_identity'),
+      target_genders:[target],
+      role:f.get('role'),
+      age_band:f.get('age_band'),
+      area:f.get('area'),
+      interested_modes:modes,
+      required_age_bands:ages,
+      preferred_age_bands:ages,
+      availability:['2026-10-03T10','2026-10-04T13','2026-10-10T10'],
+      portrait_opt_in:f.has('portrait_opt_in')
+    })});
+    await request('/v1/surveys',{method:'POST',body:JSON.stringify({
+      participant_id:created.id,
+      participation_intent:+f.get('participation_intent'),
+      payment_intent:+f.get('payment_intent'),
+      price_plan:f.get('price_plan'),
+      comment:f.get('comment')||''
+    })});
+    $('#joinResult').textContent='送信しました。ご協力ありがとうございます。';
+    if(OPS) loadKpi();
+  }catch(err){
+    $('#joinResult').textContent=err.message;
+  }
+};
+async function loadKpi(){
+  if(!OPS||!$('#kpis')) return;
+  try{
+    const d=await request('/v1/kpis');
+    const labels={participation_intent_rate:'参加意向',payment_intent_rate:'支払意思',portrait_approval_rate:'似顔絵承認',formation_rate:'編成成立'};
+    $('#kpis').innerHTML=Object.entries(labels).map(([k,v])=>`<div><b>${v}</b><h3>${Math.round(d[k]*100)}%</h3><small>基準 ${Math.round(d.thresholds[k]*100)}%</small></div>`).join('');
+  }catch{
+    $('#kpis').innerHTML='<div>API起動後に表示します</div>';
+  }
+}
+if(OPS){
+  $('#simulate').onclick=async()=>{
+    try{$('#simulation').textContent=JSON.stringify(await request('/v1/simulations',{method:'POST'}),null,2);loadKpi()}
+    catch(e){$('#simulation').textContent=e.message}
+  };
+  $('#kpis').innerHTML='<div>「匿名編成を実行」を押すと最新KPIを表示します</div>';
+}

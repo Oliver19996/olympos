@@ -2,7 +2,8 @@ import json, uuid
 from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from .config import CORS_ORIGINS
+from fastapi.staticfiles import StaticFiles
+from .config import CORS_ALLOW_ALL, CORS_ORIGINS, WEB_DIR
 from .database import init_db, db
 from .models import ParticipantIn, SurveyIn, PortraitRequest, PortraitDecision, SimulationResult
 from .matching import simulate
@@ -10,7 +11,7 @@ from .portrait import provider
 
 now=lambda: datetime.now(timezone.utc).isoformat()
 app=FastAPI(title='OLYMPOS Phase 0 API',version='0.1.0')
-app.add_middleware(CORSMiddleware,allow_origins=CORS_ORIGINS,allow_methods=['*'],allow_headers=['*'])
+app.add_middleware(CORSMiddleware,allow_origins=['*'] if CORS_ALLOW_ALL else CORS_ORIGINS,allow_methods=['*'],allow_headers=['*'])
 
 @app.on_event('startup')
 def startup(): init_db()
@@ -22,17 +23,18 @@ def health(): return {'status':'ok','service':'OLYMPOS','phase':'0'}
 def create_participant(x:ParticipantIn):
     pid=str(uuid.uuid4())
     with db() as c:
-        c.execute('''INSERT INTO participants VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)''',(
-          pid,x.consent_version,now(),x.gender_identity,x.target_gender,x.age_band,x.area,x.role,
-          json.dumps(x.required_age_bands),json.dumps(x.preferred_age_bands),json.dumps(x.availability),int(x.portrait_opt_in),now()))
+        c.execute('''INSERT INTO participants(id,consent_version,consented_at,gender_identity,target_gender,age_band,area,role,required_json,preferred_json,availability_json,portrait_opt_in,interested_json,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)''',(
+          pid,x.consent_version,now(),x.gender_identity,json.dumps(x.target_genders),x.age_band,x.area,x.role,
+          json.dumps(x.required_age_bands),json.dumps(x.preferred_age_bands),json.dumps(x.availability),int(x.portrait_opt_in),json.dumps(x.interested_modes),now()))
     return {'id':pid,'anonymous':True}
 
 @app.post('/v1/surveys',status_code=201)
 def create_survey(x:SurveyIn):
     with db() as c:
-        if not c.execute('SELECT 1 FROM participants WHERE id=?',(x.participant_id,)).fetchone(): raise HTTPException(404,'participant not found')
+        if x.participant_id and not c.execute('SELECT 1 FROM participants WHERE id=?',(x.participant_id,)).fetchone():
+            raise HTTPException(404,'participant not found')
         c.execute('INSERT INTO survey_responses(participant_id,participation_intent,payment_intent,price_plan,usability_score,comment,created_at) VALUES(?,?,?,?,?,?,?)',
-          (x.participant_id,x.participation_intent,x.payment_intent,x.price_plan,x.usability_score,x.comment,now()))
+          (x.participant_id,x.participation_intent,x.payment_intent,x.price_plan,x.usability_score or 0,x.comment,now()))
     return {'status':'recorded'}
 
 def participants():
@@ -40,6 +42,9 @@ def participants():
     result=[]
     for r in rows:
         d=dict(r); d['required_age_bands']=json.loads(d.pop('required_json')); d['preferred_age_bands']=json.loads(d.pop('preferred_json')); d['availability']=json.loads(d.pop('availability_json'))
+        raw=d.get('target_gender') or '[]'
+        d['target_genders']=json.loads(raw) if isinstance(raw,str) and raw.startswith('[') else [raw]
+        d['interested_modes']=json.loads(d.pop('interested_json') or '[]')
         result.append(d)
     return result
 
@@ -76,3 +81,6 @@ def decide_portrait(trial_id:int,x:PortraitDecision):
         if not c.execute('SELECT 1 FROM portrait_trials WHERE id=?',(trial_id,)).fetchone(): raise HTTPException(404,'trial not found')
         c.execute('UPDATE portrait_trials SET approved=?,rejection_reason=? WHERE id=?',(int(x.approved),x.rejection_reason,trial_id))
     return {'status':'approved' if x.approved else 'rejected'}
+
+if WEB_DIR.is_dir():
+    app.mount('/', StaticFiles(directory=WEB_DIR, html=True), name='web')

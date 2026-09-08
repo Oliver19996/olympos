@@ -28,10 +28,11 @@ class OlymposApi {
   }) async {
     final data = await _json('/v1/participants', method: 'POST', body: {
       'gender_identity': gender,
-      'target_gender': target,
+      'target_genders': [target],
       'role': role,
       'age_band': ageBand,
-      'area': '東京23区',
+      'area': '東京都',
+      'interested_modes': [gender == 'male' ? 'ZEUS' : 'APHRODITE'],
       'required_age_bands': [ageBand],
       'preferred_age_bands': [ageBand],
       'availability': [

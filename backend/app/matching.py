@@ -1,13 +1,26 @@
+import json
 from collections import defaultdict
 from .models import MatchGroup
 
 AGE_ORDER = {'20-24':0,'25-29':1,'30-34':2,'35-39':3}
 
+def _as_list(value):
+    if isinstance(value, list):
+        return value
+    if isinstance(value, str) and value.startswith('['):
+        return json.loads(value)
+    return [value] if value else []
+
+def _wants(targets, identity):
+    return 'anyone' in targets or identity in targets
+
 def _hard_match(host, candidate):
+    host_wants = _as_list(host.get('target_genders') or host.get('target_gender'))
+    cand_wants = _as_list(candidate.get('target_genders') or candidate.get('target_gender'))
     return (
         host['role'] == 'host' and candidate['role'] == 'candidate'
-        and host['gender_identity'] == candidate['target_gender']
-        and candidate['gender_identity'] == host['target_gender']
+        and _wants(host_wants, candidate['gender_identity'])
+        and _wants(cand_wants, host['gender_identity'])
         and candidate['age_band'] in host['required_age_bands']
         and host['age_band'] in candidate['required_age_bands']
         and host['area'] == candidate['area']
@@ -35,8 +48,14 @@ def simulate(participants):
         for c in selected:
             for slot in set(host['availability']) & set(c['availability']): shared_count[slot] += 1
         viable = sorted([s for s,n in shared_count.items() if n >= 1])
-        ctype = 'MALE_HOST' if host['gender_identity']=='male' else 'FEMALE_HOST'
-        groups.append(MatchGroup(course_type=ctype, display_name='ZEUS' if ctype=='MALE_HOST' else 'APHRODITE', host_id=host['id'], candidate_ids=[c['id'] for c in selected], shared_slots=viable[:5]))
+        modes = _as_list(host.get('interested_modes'))
+        if host['gender_identity']=='male' or ('ZEUS' in modes and 'APHRODITE' not in modes):
+            ctype, name = 'MALE_HOST', 'ZEUS'
+        elif host['gender_identity']=='female' or 'APHRODITE' in modes:
+            ctype, name = 'FEMALE_HOST', 'APHRODITE'
+        else:
+            ctype, name = 'MALE_HOST', 'ZEUS'
+        groups.append(MatchGroup(course_type=ctype, display_name=name, host_id=host['id'], candidate_ids=[c['id'] for c in selected], shared_slots=viable[:5]))
         used.update(c['id'] for c in selected); used.add(host['id'])
     assigned = sum(1+len(g.candidate_ids) for g in groups)
     return groups, assigned

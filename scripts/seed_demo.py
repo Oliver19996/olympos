@@ -7,7 +7,7 @@ def post(path,data):
     return json.load(urllib.request.urlopen(req))
 
 def participant(gender,role,band='25-29'):
-    return {'gender_identity':gender,'target_gender':'female' if gender=='male' else 'male','age_band':band,'area':'東京23区','role':role,'required_age_bands':['25-29'],'preferred_age_bands':['25-29'],'availability':['2026-10-03T10','2026-10-04T13','2026-10-10T10'],'portrait_opt_in':False}
+    return {'gender_identity':gender,'target_genders':['female' if gender=='male' else 'male'],'age_band':band,'area':'東京都','role':role,'interested_modes':['ZEUS' if gender=='male' else 'APHRODITE'],'required_age_bands':['25-29'],'preferred_age_bands':['25-29'],'availability':['2026-10-03T10','2026-10-04T13','2026-10-10T10'],'portrait_opt_in':False}
 
 ids=[]
 ids.append(post('/v1/participants',participant('male','host'))['id'])
@@ -15,5 +15,5 @@ for _ in range(7): ids.append(post('/v1/participants',participant('female','cand
 ids.append(post('/v1/participants',participant('female','host'))['id'])
 for _ in range(7): ids.append(post('/v1/participants',participant('male','candidate'))['id'])
 for pid in ids:
-    post('/v1/surveys',{'participant_id':pid,'participation_intent':4,'payment_intent':4,'price_plan':'iap-baseline','usability_score':4,'comment':'デモ回答'})
+    post('/v1/surveys',{'participant_id':pid,'participation_intent':4,'payment_intent':4,'price_plan':'external-current','usability_score':4,'comment':'デモ回答'})
 print(json.dumps(post('/v1/simulations',{}),ensure_ascii=False,indent=2))

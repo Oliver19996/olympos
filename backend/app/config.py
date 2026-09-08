@@ -14,7 +14,9 @@ def _csv(name: str, default: str) -> list[str]:
 
 OLYMPOS_ENV = os.getenv("OLYMPOS_ENV", "development")
 DB_PATH = Path(os.getenv("OLYMPOS_DB_PATH", "./data/olympos_phase0.db"))
-CORS_ORIGINS = _csv("OLYMPOS_CORS_ORIGINS", "http://localhost:8080")
+CORS_ORIGINS = _csv("OLYMPOS_CORS_ORIGINS", "http://localhost:8080,http://127.0.0.1:8080")
+CORS_ALLOW_ALL = CORS_ORIGINS == ["*"]
+WEB_DIR = BACKEND_ROOT.parent / "web"
 PORTRAIT_PROVIDER = os.getenv("PORTRAIT_PROVIDER", "mock")
 PORTRAIT_API_URL = os.getenv("PORTRAIT_API_URL", "")
 PORTRAIT_API_KEY = os.getenv("PORTRAIT_API_KEY", "")

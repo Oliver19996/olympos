@@ -2,35 +2,35 @@ from typing import Literal
 from pydantic import BaseModel, Field, field_validator
 
 AgeBand = Literal['20-24','25-29','30-34','35-39']
-Gender = Literal['male','female']
+Gender = Literal['male','female','other']
+Target = Literal['male','female','other']
 Role = Literal['host','candidate']
+Course = Literal['ZEUS','APHRODITE']
 
 class ParticipantIn(BaseModel):
     consent_version: str = 'phase0-v1'
     gender_identity: Gender
-    target_gender: Gender
+    target_genders: list[Target] = Field(min_length=1)
     age_band: AgeBand
     area: str = Field(min_length=1, max_length=40)
     role: Role
+    interested_modes: list[Course] = Field(min_length=1)
     required_age_bands: list[AgeBand]
     preferred_age_bands: list[AgeBand] = []
     availability: list[str] = Field(min_length=3, description='ISO time-slot IDs; at least 3')
     portrait_opt_in: bool = False
 
-    @field_validator('target_gender')
+    @field_validator('target_genders','interested_modes')
     @classmethod
-    def heterosexual_phase0(cls, value, info):
-        own = info.data.get('gender_identity')
-        if own and own == value:
-            raise ValueError('Phase 0は異性間マッチングのみです')
-        return value
+    def unique_choices(cls, value):
+        return list(dict.fromkeys(value))
 
 class SurveyIn(BaseModel):
-    participant_id: str
+    participant_id: str | None = None
     participation_intent: int = Field(ge=1, le=5)
     payment_intent: int = Field(ge=1, le=5)
-    price_plan: Literal['external-current','iap-baseline']
-    usability_score: int = Field(ge=1, le=5)
+    price_plan: Literal['external-current','plan-1000-9000','iap-baseline']
+    usability_score: int | None = Field(default=None, ge=1, le=5)
     comment: str = Field(default='', max_length=1000)
 
 class PortraitRequest(BaseModel):

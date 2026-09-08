@@ -1,11 +1,179 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OLYMPOS Phase 0</title><link rel="stylesheet" href="styles.css"></head><body>
 <header><div class="brand">OLYMPOS</div><span class="pill">Phase 0 検証版</span></header>
 <main>
-<section class="hero"><p class="eyebrow">最大7名から、ひとりを選ぶ。</p><h1>恋の選択を、<br><em>2週間の物語</em>に。</h1><p>男性ホストはZEUS、女性ホストはAPHRODITE。候補者6名でも成立する検証条件です。</p><button data-go="join">体験を始める</button></section>
-<nav class="steps"><button data-tab="concept">概要</button><button data-tab="join">登録</button><button data-tab="flow">体験</button><button data-tab="survey">評価</button><button data-tab="dashboard">KPI</button></nav>
-<section id="concept" class="panel active"><h2>OLYMPOSとは</h2><div class="cards"><article><b>ZEUS</b><p>男性ホスト1名と女性候補者6〜7名。</p></article><article><b>APHRODITE</b><p>女性ホスト1名と男性候補者6〜7名。</p></article><article><b>PRIVACY</b><p>候補者同士には実写でなくAI似顔絵を表示。</p></article></div><div class="notice">この検証版では課金・eKYC・実際のデートを行いません。</div></section>
-<section id="join" class="panel"><h2>匿名プロフィール</h2><form id="joinForm"><label>性自認<select name="gender_identity"><option value="male">男性</option><option value="female">女性</option></select></label><label>希望対象<select name="target_gender"><option value="female">女性</option><option value="male">男性</option></select></label><label>役割<select name="role"><option value="host">ホスト</option><option value="candidate">候補者</option></select></label><label>年齢帯<select name="age_band"><option>20-24</option><option selected>25-29</option><option>30-34</option><option>35-39</option></select></label><label>活動エリア<input name="area" value="東京23区" required></label><fieldset><legend>必須の希望年齢帯</legend><label><input type="checkbox" name="required" value="20-24">20-24</label><label><input type="checkbox" name="required" value="25-29" checked>25-29</label><label><input type="checkbox" name="required" value="30-34">30-34</label><label><input type="checkbox" name="required" value="35-39">35-39</label></fieldset><label><input type="checkbox" name="portrait_opt_in">AI似顔絵テストを希望する</label><label><input type="checkbox" name="consent" required>Phase 0の説明とデータ取扱いに同意する</label><button>匿名登録</button></form><output id="joinResult"></output></section>
-<section id="flow" class="panel"><h2>体験フロー</h2><ol class="timeline"><li><b>最大7名が割当</b><span>6名以上で成立</span></li><li><b>4名を選択</b><span>プロフィールから一次選考</span></li><li><b>初回デート</b><span>2週間以内・候補者同士は非対面</span></li><li><b>最終候補2名</b><span>個別アクティビティ</span></li><li><b>双方投票</b><span>相互一致だけ成立</span></li></ol><div class="portrait-demo"><div class="avatar">AI</div><div><b>候補者同士の表示例</b><p>写実的イラスト＋限定プロフィール。実写はホストと候補者間だけ。</p></div></div></section>
-<section id="survey" class="panel"><h2>体験後アンケート</h2><form id="surveyForm"><label>匿名参加ID<input name="participant_id" required></label><label>参加したい度（1〜5）<input name="participation_intent" type="range" min="1" max="5" value="4"></label><label>支払意思（1〜5）<input name="payment_intent" type="range" min="1" max="5" value="4"></label><label>価格<select name="price_plan"><option value="external-current">候補2,000円／ホスト6,000円</option><option value="iap-baseline">候補2,500円／ホスト7,500円</option></select></label><label>使いやすさ（1〜5）<input name="usability_score" type="range" min="1" max="5" value="4"></label><label>コメント<textarea name="comment"></textarea></label><button>回答を送信</button></form><output id="surveyResult"></output></section>
-<section id="dashboard" class="panel"><h2>検証KPI</h2><button id="simulate">匿名編成を実行</button><div id="kpis" class="cards"></div><pre id="simulation"></pre></section>
+<section class="hero"><p class="eyebrow">最大7名から、ひとりを選ぶ。</p><h1>恋の選択を、<br><em>2週間の物語</em>に。</h1><p>物語の主人公はZEUSとAPHRODITE。3つのフェーズで運命の相手を探す。</p><button data-go="join">参加する</button></section>
+<nav class="steps"><button data-tab="concept">概要</button><button data-tab="flow">体験</button><button data-tab="join">参加</button><button data-tab="dashboard" data-ops-only hidden>KPI</button></nav>
+<section id="concept" class="panel active">
+<h2>OLYMPOSとは</h2>
+<p class="lead">無限にスワイプして、気になる人に「いいね」を送り続けるアプリではありません。主役1名と共演者最大7名が同じクールに入り、ステータスの確認・夜ご飯・昼間のデートを経て<em>約2週間でひとりを選ぶ</em>ための新感覚のマッチングアプリです。</p>
+<div class="cards course">
+<article><b>ZEUS</b><p>男性主役1名と、女性共演者6〜7名。主役が物語の中心になり、食事やアクティビティを通じて共演者から運命の相手を選んでいきます。</p></article>
+<article><b>APHRODITE</b><p>女性主役1名と、男性共演者6〜7名。ZEUSと同じルールで、主導する側だけが入れ替わります。</p></article>
+</div>
+<h3>ほかのマッチングアプリと、ここが違う</h3>
+<div class="compare">
+<div><span class="was">ほかのアプリ</span><strong>何人も同時に話し、終わりが見えない</strong><span class="now">OLYMPOS</span><strong>1クールは最大7名。約2週間で決着する</strong></div>
+<div><span class="was">ほかのアプリ</span><strong>スワイプと「いいね」の数で進む</strong><span class="now">OLYMPOS</span><strong>7名→4名→2名へ絞り、最後は双方投票</strong></div>
+<div><span class="was">ほかのアプリ</span><strong>実写プロフィールが最初から全員に見える</strong><span class="now">OLYMPOS</span><strong>実写は主役との間だけ、共演者同士の姿はAI似顔絵でのみ確認できる</strong></div>
+<div><span class="was">ほかのアプリ</span><strong>片方の「いいね」や既読で関係が曖昧になる</strong><span class="now">OLYMPOS</span><strong>相互に選んだときだけ成立。一方的な獲得はない</strong></div>
+<div><span class="was">ほかのアプリ</span><strong>料金は月額制</strong><span class="now">OLYMPOS</span><strong>料金はクール参加時ごとに支払い、共演者側でマッチ成立しない場合は一部返金あり</strong></div>
+</div>
+<h3>大切なポイント</h3>
+<div class="cards">
+<article><b>選ぶ人数は少ない</b><p>出会いは増やすほど薄くなる。枠を絞って、相手を真剣に見る時間をつくります。</p></article>
+<article><b>共演者同士は競わない</b><p>同じクールの共演者には実写を出しません。比べ合いではなく、主役との関係だけに集中してください。</p></article>
+<article><b>成立は双方の意思</b><p>主役が選んでも、共演者が選ばなければ終わりです。片側の熱量だけでは続きません。</p></article>
+</div>
+<div class="notice">この検証版では課金・実際のデートを行いません。コンセプトと使い心地の確認が目的です。今後のアプリ実装に向けてぜひご協力お願いします。</div>
+<p class="cta"><button type="button" data-go="join">参加する</button></p>
+</section>
+<section id="join" class="panel">
+<h2>参加と評価</h2>
+<p class="lead">匿名のまま送れます。プロフィールと、コンセプトを読んだ感想をまとめて記入してください。</p>
+<form id="joinForm">
+<h3>あなたについて</h3>
+<label>性自認<select name="gender_identity" required>
+<option value="male">男性</option>
+<option value="female">女性</option>
+<option value="other">それ以外</option>
+</select></label>
+<label>希望する相手<select name="target" required>
+<option value="male">男性</option>
+<option value="female" selected>女性</option>
+<option value="other">それ以外</option>
+</select></label>
+<label>立ち位置<select name="role" required>
+<option value="host">主役 — 物語の中心で、相手を選ぶ</option>
+<option value="candidate">共演者 — クールに入り、選ばれる側へ</option>
+</select></label>
+<label>年齢帯<select name="age_band">
+<option>20-24</option>
+<option selected>25-29</option>
+<option>30-34</option>
+<option>35-39</option>
+</select></label>
+<label>活動エリア<select name="area" required>
+<option value="北海道">北海道</option>
+<option value="青森県">青森県</option>
+<option value="岩手県">岩手県</option>
+<option value="宮城県">宮城県</option>
+<option value="秋田県">秋田県</option>
+<option value="山形県">山形県</option>
+<option value="福島県">福島県</option>
+<option value="茨城県">茨城県</option>
+<option value="栃木県">栃木県</option>
+<option value="群馬県">群馬県</option>
+<option value="埼玉県">埼玉県</option>
+<option value="千葉県">千葉県</option>
+<option value="東京都" selected>東京都</option>
+<option value="神奈川県">神奈川県</option>
+<option value="新潟県">新潟県</option>
+<option value="富山県">富山県</option>
+<option value="石川県">石川県</option>
+<option value="福井県">福井県</option>
+<option value="山梨県">山梨県</option>
+<option value="長野県">長野県</option>
+<option value="岐阜県">岐阜県</option>
+<option value="静岡県">静岡県</option>
+<option value="愛知県">愛知県</option>
+<option value="三重県">三重県</option>
+<option value="滋賀県">滋賀県</option>
+<option value="京都府">京都府</option>
+<option value="大阪府">大阪府</option>
+<option value="兵庫県">兵庫県</option>
+<option value="奈良県">奈良県</option>
+<option value="和歌山県">和歌山県</option>
+<option value="鳥取県">鳥取県</option>
+<option value="島根県">島根県</option>
+<option value="岡山県">岡山県</option>
+<option value="広島県">広島県</option>
+<option value="山口県">山口県</option>
+<option value="徳島県">徳島県</option>
+<option value="香川県">香川県</option>
+<option value="愛媛県">愛媛県</option>
+<option value="高知県">高知県</option>
+<option value="福岡県">福岡県</option>
+<option value="佐賀県">佐賀県</option>
+<option value="長崎県">長崎県</option>
+<option value="熊本県">熊本県</option>
+<option value="大分県">大分県</option>
+<option value="宮崎県">宮崎県</option>
+<option value="鹿児島県">鹿児島県</option>
+<option value="沖縄県">沖縄県</option>
+</select></label>
+<fieldset>
+<legend>興味のあるモード</legend>
+<label><input type="checkbox" name="mode" value="ZEUS">ZEUS — 主役が男性側の物語</label>
+<label><input type="checkbox" name="mode" value="APHRODITE">APHRODITE — 主役が女性側の物語</label>
+</fieldset>
+<fieldset>
+<legend>必須の希望年齢帯</legend>
+<label><input type="checkbox" name="required" value="20-24">20-24</label>
+<label><input type="checkbox" name="required" value="25-29" checked>25-29</label>
+<label><input type="checkbox" name="required" value="30-34">30-34</label>
+<label><input type="checkbox" name="required" value="35-39">35-39</label>
+</fieldset>
+<h3>感想</h3>
+<label>参加したい度（1〜5）<input name="participation_intent" type="range" min="1" max="5" value="4"></label>
+<label>支払意思（1〜5）<input name="payment_intent" type="range" min="1" max="5" value="4"></label>
+<label>価格<select name="price_plan">
+<option value="external-current">共演者 2,000円／主役 6,000円</option>
+<option value="plan-1000-9000">共演者 1,000円／主役 9,000円</option>
+</select></label>
+<label>感想・質問・要望<textarea name="comment"></textarea></label>
+<label><input type="checkbox" name="portrait_opt_in">AIによる似顔絵をマッチングアプリに使うことに賛成</label>
+<label><input type="checkbox" name="consent" required>上記データをアプリ開発のために提供することに同意する</label>
+<button>送信する</button>
+</form>
+<output id="joinResult"></output>
+</section>
+<section id="flow" class="panel">
+<h2>共演者選別の流れ</h2>
+<p class="lead">主役は約2週間で、最大7名からひとりへ絞ります。共演者同士は会わず、実写は主役との間だけです。</p>
+<ol class="flow">
+<li>
+<span class="flow-step">0</span>
+<div>
+<b>エントリー</b>
+<p>主役1名＋共演者6〜7名でクール成立。ここから物語が始まります。</p>
+</div>
+<strong class="flow-count">6〜7名</strong>
+</li>
+<li>
+<span class="flow-step">1</span>
+<div>
+<b>一次選考</b>
+<p>プロフィールとAI似顔絵を見て、会う4名を選びます。選ばれなかった共演者は残念ながらここで終了・全額返金します。</p>
+</div>
+<strong class="flow-count">4名に</strong>
+</li>
+<li>
+<span class="flow-step">2</span>
+<div>
+<b>初回デート</b>
+<p>選んだ4名と、2週間以内にそれぞれ食事へ。夜の会話で、残る共演者2名を決めます。</p>
+</div>
+<strong class="flow-count">2名に</strong>
+</li>
+<li>
+<span class="flow-step">3</span>
+<div>
+<b>昼間のアクティビティ</b>
+<p>食事だけではわからない相手を知るため、残る共演者2名と昼間のデートを過ごします。</p>
+</div>
+<strong class="flow-count"></strong>
+</li>
+<li>
+<span class="flow-step">4</span>
+<div>
+<b>最後は相互投票</b>
+<p>主役と共演者がそれぞれ相手を選びます。相互に選んだときだけマッチングが成立します。</p>
+</div>
+<strong class="flow-count">最後の一人に</strong>
+</li>
+</ol>
+<div class="portrait-demo"><div class="avatar">AI</div><div><b>共演者同士の表示例</b><p>写実的イラスト＋限定プロフィール。実写真は主役と共演者間だけが見れます。</p></div></div>
+<p class="cta"><button type="button" data-go="join">参加する</button></p>
+</section>
+<section id="dashboard" class="panel" data-ops-only hidden><h2>検証KPI</h2><p class="notice">運営用。参加者には表示しません。</p><button id="simulate">匿名編成を実行</button><div id="kpis" class="cards"></div><pre id="simulation"></pre></section>
 </main><footer>OLYMPOS Phase 0 — 検証目的のプロトタイプ</footer><script src="app.js"></script></body></html>
