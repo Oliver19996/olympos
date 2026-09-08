@@ -10,14 +10,61 @@
 
 GitHub Pages は静的ファイルだけなので、API（登録・アンケート）は動きません。画面だけ置きたい場合の補助です。
 
-## Renderでの手順
+## Renderで必要なセットアップ
 
-1. https://github.com/Oliver19996/olympos を Render に接続する
-2. Docker ランタイムでデプロイする（`render.yaml` を使う）
-3. 発行された `https://xxxx.onrender.com` を回答者に配る
-4. 運営は `https://xxxx.onrender.com/?ops=1`
+GitHub の https://github.com/Oliver19996/olympos を Render に繋ぐだけで動きます。似顔絵は既定の `mock` なので **APIキーは不要** です。`backend/.env` も Render には上げません。
 
-無料枠はスリープすることがあります。最初のアクセスで数十秒かかることがあります。
+### 1. アカウントとGitHub連携
+
+1. [Render](https://render.com/) にサインアップする
+2. Dashboard で GitHub を接続し、`Oliver19996/olympos` を許可する
+
+### 2. サービスの作り方（どちらか）
+
+**A. Blueprint（推奨）**
+
+1. Dashboard → **New** → **Blueprint**
+2. リポジトリ `olympos` を選ぶ
+3. `render.yaml` を読み取り、Web Service `olympos` が作られる
+
+**B. 手動**
+
+1. **New** → **Web Service**
+2. リポジトリ `olympos`、ランタイム **Docker**
+3. 下記の環境変数とディスクを設定する
+
+### 3. 環境変数
+
+`render.yaml` に入っている値です。手動作成時は同じものを入れます。
+
+| 変数 | 値 | 用途 |
+| --- | --- | --- |
+| `OLYMPOS_ENV` | `production` | 本番扱い |
+| `OLYMPOS_CORS_ORIGINS` | `*` | 同一オリジン配信ならこれで足りる |
+| `OLYMPOS_DB_PATH` | `/data/olympos_phase0.db` | SQLite の保存先 |
+| `PORTRAIT_PROVIDER` | `mock` | 外部似顔絵APIなし |
+
+似顔絵を実接続する場合だけ `PORTRAIT_PROVIDER=http` と URL／キーを追加します。Phase 0 では不要です。
+
+### 4. ディスク（回答を残す場合）
+
+SQLite はファイルです。**無料Webはディスクを付けられず**、再起動・スリープ・再デプロイで回答が消えます。
+
+回答を残すなら：
+
+1. プランを **Starter**（有料）にする
+2. Persistent Disk を付ける（mount `/data`、1GB で足りる）
+3. `OLYMPOS_DB_PATH=/data/olympos_phase0.db` のままにする
+
+無料で公開確認だけするならディスクなしで構いません。その場合もアプリは動きます。
+
+### 5. 公開後
+
+1. 発行URL `https://xxxx.onrender.com` を回答者に配る
+2. 運営は `https://xxxx.onrender.com/?ops=1`
+3. 初回アクセスはスリープ解除で数十秒かかることがある（無料枠）
+
+ヘルスチェックは `/health` です。
 
 ## ローカル確認
 

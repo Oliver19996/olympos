@@ -11,5 +11,7 @@ Cursor 用のプロジェクトマップ。詳細は `README.md`。
 | `scripts/seed_demo.py` | デモデータ投入 |
 | `docs/api.http` | REST Client で API 手動実行 |
 | `docs/github.md` | GitHub 初回 push 手順 |
+| `docs/hosting.md` | Render 等への外部公開 |
+| `backend/data/olympos_phase0.db` | アンケート・登録の集計（Git管理外） |
 
 起動: `make setup` → `make api` と `make web`。ワークスペースは `OLYMPOS.code-workspace` を開く。
