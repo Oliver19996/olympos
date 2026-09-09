@@ -151,7 +151,7 @@ form > label:has([name="portrait_opt_in"]),
 form > label:has([name="role"]),
 form > label:has([name="area"]),
 form > label:has([name="price_plan"]),
-form > label.scale {
+form > fieldset.scale {
   grid-column: 1 / -1;
 }
 label, fieldset {
@@ -170,31 +170,60 @@ input, select, textarea {
   font-size: 16px;
 }
 textarea { min-height: 96px; }
-input[type="range"] {
-  min-height: 32px;
-  accent-color: var(--ruby);
+fieldset.scale {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin: 0;
+  padding: 14px;
 }
-.scale strong {
+fieldset.scale legend {
   color: var(--gold);
-  font: 700 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font: 700 16px Georgia, serif;
+  padding: 0 6px;
 }
-.scale-axis,
-.scale-ends {
+.scale-now {
+  margin: 0;
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 15px;
+}
+.scale-choices {
+  display: grid;
+  gap: 8px;
+}
+.scale-choices button {
+  width: 100%;
+  background: var(--surface);
+  color: var(--text);
   display: flex;
-  justify-content: space-between;
-  gap: 4px;
-  font-size: 12px;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid #ffffff22;
 }
-.scale-axis span {
-  flex: 1;
-  text-align: center;
-  color: #d8cfd3;
+.scale-choices button b {
+  width: 28px;
+  flex: 0 0 28px;
+  color: var(--gold);
+  font: 700 18px Georgia, serif;
 }
-.scale-ends {
+.scale-choices button span {
   color: var(--muted);
+  font-weight: 500;
   line-height: 1.4;
 }
-.scale-ends span:last-child { text-align: right; }
+.scale-choices button.on {
+  background: linear-gradient(135deg, var(--ruby), var(--ruby2));
+  border-color: transparent;
+}
+.scale-choices button.on b,
+.scale-choices button.on span {
+  color: #fff;
+}
 input[type="checkbox"] {
   width: 22px;
   height: 22px;

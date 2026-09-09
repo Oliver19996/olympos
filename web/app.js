@@ -26,12 +26,17 @@ const SCALE_LABELS={
   participation_intent:{1:'まったく参加したくない',2:'あまり参加したくない',3:'どちらともいえない',4:'参加したい',5:'ぜひ参加したい'},
   payment_intent:{1:'まったく払いたくない',2:'あまり払いたくない',3:'どちらともいえない',4:'払ってもよい',5:'ぜひ払いたい'}
 };
-$$('.scale input[type=range]').forEach(input=>{
-  const now=input.closest('.scale').querySelector('[data-scale-now]');
-  const labels=SCALE_LABELS[input.name];
-  const render=()=>{ now.textContent=`いまの選択：${input.value} ${labels[input.value]}`; };
-  input.addEventListener('input',render);
-  render();
+$$('[data-scale]').forEach(box=>{
+  const hidden=box.querySelector('input[type=hidden]');
+  const now=box.querySelector('[data-scale-now]');
+  const labels=SCALE_LABELS[hidden.name];
+  const set=n=>{
+    hidden.value=String(n);
+    now.textContent=`いまの選択：${n} ${labels[n]}`;
+    box.querySelectorAll('.scale-choices button').forEach(b=>b.classList.toggle('on',b.dataset.value===String(n)));
+  };
+  box.querySelectorAll('.scale-choices button').forEach(b=>b.onclick=()=>set(b.dataset.value));
+  set(hidden.value);
 });
 async function request(path,options={}){
   const r=await fetch(API+path,{headers:{'Content-Type':'application/json'},...options});

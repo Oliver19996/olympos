@@ -13,6 +13,15 @@ now=lambda: datetime.now(timezone.utc).isoformat()
 app=FastAPI(title='OLYMPOS Phase 0 API',version='0.1.0')
 app.add_middleware(CORSMiddleware,allow_origins=['*'] if CORS_ALLOW_ALL else CORS_ORIGINS,allow_methods=['*'],allow_headers=['*'])
 
+@app.middleware('http')
+async def no_store_web(request, call_next):
+    response = await call_next(request)
+    path = request.url.path
+    if path.endswith(('.css', '.js', '.html')) or path in ('/', ''):
+        response.headers['Cache-Control'] = 'no-store, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+    return response
+
 @app.on_event('startup')
 def startup(): init_db()
 
