@@ -58,7 +58,9 @@ def _add_interested_json(conn):
 
 def init_db():
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with sqlite3.connect(DB_PATH) as conn:
+    with sqlite3.connect(DB_PATH, timeout=30) as conn:
+        conn.execute('PRAGMA journal_mode=WAL')
+        conn.execute('PRAGMA busy_timeout=5000')
         conn.executescript(SCHEMA)
         _allow_survey_without_participant(conn)
         _add_interested_json(conn)
@@ -66,9 +68,10 @@ def init_db():
 
 @contextmanager
 def db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     conn.row_factory = sqlite3.Row
     conn.execute('PRAGMA foreign_keys=ON')
+    conn.execute('PRAGMA busy_timeout=5000')
     try:
         yield conn
         conn.commit()

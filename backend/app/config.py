@@ -13,7 +13,8 @@ def _csv(name: str, default: str) -> list[str]:
 
 
 OLYMPOS_ENV = os.getenv("OLYMPOS_ENV", "development")
-DB_PATH = Path(os.getenv("OLYMPOS_DB_PATH", "./data/olympos_phase0.db"))
+_db = Path(os.getenv("OLYMPOS_DB_PATH", "./data/olympos_phase0.db"))
+DB_PATH = _db if _db.is_absolute() else (BACKEND_ROOT / _db).resolve()
 CORS_ORIGINS = _csv("OLYMPOS_CORS_ORIGINS", "http://localhost:8080,http://127.0.0.1:8080")
 CORS_ALLOW_ALL = CORS_ORIGINS == ["*"]
 WEB_DIR = BACKEND_ROOT.parent / "web"

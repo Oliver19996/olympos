@@ -75,7 +75,7 @@ python3 -m http.server 8080
 | 参加意向・支払意思・価格・感想 | `survey_responses` | 同上 |
 | 編成シミュレーション | `simulation_runs` | 同上 |
 
-集計APIは `GET /v1/kpis`。画面では `/?ops=1` の検証KPIに出ます。Render 無料枠ではコンテナ内の `./data/olympos_phase0.db`（再起動で消える）。有料＋ディスク時は `/data/olympos_phase0.db`。`.env` や Git には入りません。
+集計APIは `GET /v1/kpis`。画面では `/?ops=1` の検証KPIに出ます。Render では Persistent Disk 上の `/data/olympos_phase0.db`（再デプロイ後も残る。Starter が必要）。`.env` や Git には入りません。
 
 ## デモデータ
 

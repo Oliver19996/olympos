@@ -2,7 +2,7 @@ services:
   - type: web
     name: olympos
     runtime: docker
-    plan: free
+    plan: starter
     healthCheckPath: /health
     envVars:
       - key: OLYMPOS_ENV
@@ -10,6 +10,10 @@ services:
       - key: OLYMPOS_CORS_ORIGINS
         value: "*"
       - key: OLYMPOS_DB_PATH
-        value: ./data/olympos_phase0.db
+        value: /data/olympos_phase0.db
       - key: PORTRAIT_PROVIDER
         value: mock
+    disk:
+      name: olympos-data
+      mountPath: /data
+      sizeGB: 1
