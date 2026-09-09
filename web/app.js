@@ -4,14 +4,24 @@ const API=params.get('api')||(local?'http://localhost:8000':'');
 const OPS=params.has('ops');
 const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
 if(OPS) $$('[data-ops-only]').forEach(el=>el.hidden=false);
-function tab(id){
+function tab(id,instant){
   if(id==='dashboard'&&!OPS) id='join';
   if(id==='survey') id='join';
   $$('.panel').forEach(x=>x.classList.toggle('active',x.id===id));
-  scrollTo({top:$('.steps').offsetTop-70,behavior:'smooth'});
+  $$('[data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===id));
+  const panel=document.getElementById(id);
+  const chrome=$('.chrome');
+  const offset=chrome?chrome.getBoundingClientRect().height:0;
+  if(panel){
+    const top=panel.getBoundingClientRect().top+window.scrollY-offset-8;
+    scrollTo({top:Math.max(0,top),behavior:instant?'auto':'smooth'});
+  }
 }
 $$('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 $$('[data-go]').forEach(b=>b.onclick=()=>tab(b.dataset.go));
+const start=params.get('tab')||location.hash.replace('#','');
+if(start) tab(start,true);
+else $$('[data-tab="concept"]').forEach(b=>b.classList.add('on'));
 async function request(path,options={}){
   const r=await fetch(API+path,{headers:{'Content-Type':'application/json'},...options});
   const data=await r.json();
