@@ -116,8 +116,18 @@
 <label><input type="checkbox" name="required" value="35-39">35-39</label>
 </fieldset>
 <h3>感想</h3>
-<label>参加したい度（1〜5）<input name="participation_intent" type="range" min="1" max="5" value="4"></label>
-<label>支払意思（1〜5）<input name="payment_intent" type="range" min="1" max="5" value="4"></label>
+<label class="scale">参加したい度
+<strong data-scale-now></strong>
+<input name="participation_intent" type="range" min="1" max="5" step="1" value="4">
+<span class="scale-axis" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></span>
+<span class="scale-ends"><span>1 まったく参加したくない</span><span>5 ぜひ参加したい</span></span>
+</label>
+<label class="scale">支払意思
+<strong data-scale-now></strong>
+<input name="payment_intent" type="range" min="1" max="5" step="1" value="4">
+<span class="scale-axis" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></span>
+<span class="scale-ends"><span>1 まったく払いたくない</span><span>5 ぜひ払いたい</span></span>
+</label>
 <label>価格<select name="price_plan">
 <option value="external-current">共演者 2,000円／主役 6,000円</option>
 <option value="plan-1000-9000">共演者 1,000円／主役 9,000円</option>

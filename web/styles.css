@@ -150,7 +150,8 @@ form > label:has([name="consent"]),
 form > label:has([name="portrait_opt_in"]),
 form > label:has([name="role"]),
 form > label:has([name="area"]),
-form > label:has([name="price_plan"]) {
+form > label:has([name="price_plan"]),
+form > label.scale {
   grid-column: 1 / -1;
 }
 label, fieldset {
@@ -170,9 +171,30 @@ input, select, textarea {
 }
 textarea { min-height: 96px; }
 input[type="range"] {
-  min-height: 28px;
+  min-height: 32px;
   accent-color: var(--ruby);
 }
+.scale strong {
+  color: var(--gold);
+  font: 700 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.scale-axis,
+.scale-ends {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  font-size: 12px;
+}
+.scale-axis span {
+  flex: 1;
+  text-align: center;
+  color: #d8cfd3;
+}
+.scale-ends {
+  color: var(--muted);
+  line-height: 1.4;
+}
+.scale-ends span:last-child { text-align: right; }
 input[type="checkbox"] {
   width: 22px;
   height: 22px;

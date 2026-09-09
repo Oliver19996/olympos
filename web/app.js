@@ -22,6 +22,17 @@ $$('[data-go]').forEach(b=>b.onclick=()=>tab(b.dataset.go));
 const start=params.get('tab')||location.hash.replace('#','');
 if(start) tab(start,true);
 else $$('[data-tab="concept"]').forEach(b=>b.classList.add('on'));
+const SCALE_LABELS={
+  participation_intent:{1:'まったく参加したくない',2:'あまり参加したくない',3:'どちらともいえない',4:'参加したい',5:'ぜひ参加したい'},
+  payment_intent:{1:'まったく払いたくない',2:'あまり払いたくない',3:'どちらともいえない',4:'払ってもよい',5:'ぜひ払いたい'}
+};
+$$('.scale input[type=range]').forEach(input=>{
+  const now=input.closest('.scale').querySelector('[data-scale-now]');
+  const labels=SCALE_LABELS[input.name];
+  const render=()=>{ now.textContent=`いまの選択：${input.value} ${labels[input.value]}`; };
+  input.addEventListener('input',render);
+  render();
+});
 async function request(path,options={}){
   const r=await fetch(API+path,{headers:{'Content-Type':'application/json'},...options});
   const data=await r.json();
